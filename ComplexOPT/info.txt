@@ -1,0 +1,8 @@
+Long term to do list:
+
+    - Add undo history dialog, allowing user to view and select from a list of all previous canvases. THis would take the shape of a resizable dialog containing a list of all histories with relevent information (including formula, min and max domain) and ok/cancel buttons.
+    - Clean up the utterly disgusting code in prefix and infix classes, and condense to a barebones namespace containing functions (first convert all class functions to static, then convert to c style namespace with functions to ease transition. Object oriented prtogramming is not needed for prefix and infix classes)
+    - Add root finder function to cooda.dll. Use multivariate calculus and newton-raphson method to locate zeros based on given seed. To the user this will add another togglable click interface, (on top of pan and rectangle zoom) a single click will select the seed, and draw an object on the screen at the location of the zero.
+      Must account for resized screen. Object must be cleared if  a) the domain is changed to be outside the zero, b) a new function is drawn c) the user selects a different togglable click (either pan or rectangle zoom)
+    - Detect when another instance of ComplexOPT is running, warn user, and disable all functionality.
+    - Investigate leading double slash '//' error.
