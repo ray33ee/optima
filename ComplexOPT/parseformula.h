@@ -5,10 +5,32 @@
 #include <QString>
 
 #include <QList>
+#include <QVector>
 #include <QString>
 #include <QStack>
 
-#include "temp.h"
+#include "qdebug.h"
+#include <complex>
+
+using Complex = std::complex<double>;
+
+struct Token
+{
+    int type;
+    Complex data;
+
+    Token(int t = 0, Complex c = Complex()):type(t), data(c) {}
+
+};
+
+struct TokenList
+{
+    Token* formula;
+    int count;
+
+    TokenList(Token* f = nullptr, int c = 0): formula(f), count(c) {}
+
+};
 
 namespace parseFormula
 {
@@ -27,7 +49,8 @@ namespace parseFormula
     /* List of functions */
     static const char* functions[] = { "log", "neg", "conj", "sqrt", "ln", "exp", "sinh", "cosh", "tanh", "sin", "cos", "tan", "asinh", "acosh", "atanh", "asin", "acos", "atan", "inv", "mod", "arg" };
 
-    void removeWhitespace(QString &);
+    /* Number of non-operator functions */
+    static const int size = 21;
 
     bool isNum(const QString &);
 
@@ -35,11 +58,13 @@ namespace parseFormula
 
     int getPrecedence(const QString &);
 
+    double getIndex(const QString &);
+
     bool isUnaryNegative(const QList<QString> &outputQueue, const QStack<QString> &opStack, const QString &prevToken);
 
     void sendToken(const QString &, const QList<QString> & outputQueue, QStack<QString> &opStack, QString &prev);
 
-    void processString(QString);
+    QVector<Token> processString(QString);
 
 }
 

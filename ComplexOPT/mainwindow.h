@@ -3,11 +3,8 @@
 
 #include <QMainWindow>
 
-//#include "structs.h"
-
 #include <QtGui>
 #include <QGraphicsView>
-#include "infix.h"
 #include "drawdialog.h"
 #include <QAction>
 #include "QLabel"
@@ -18,7 +15,6 @@
 
 #include <complex>
 
-#include "parseformula.h"
 
 using Complex = std::complex<double>;
 
@@ -47,7 +43,6 @@ public:
 
     void append(const T &rhs)
     {
-        qDebug() << rhs.m_Minimum.real() << rhs.m_Minimum.imag() << rhs.m_Maximum.real() << rhs.m_Maximum.imag() << rhs.m_Formula;
         if (m_iCurrent == m_iTop)
         {
             //Append rhs to history
@@ -109,10 +104,10 @@ private:
 
     /* DLL functions */
     using DLLConstruct = int (*)(int);
-    using DLLInitialise = int (*)(unsigned, unsigned, TokenList*, uchar*);
+    using DLLInitialise = int (*)(unsigned, unsigned, TokenList, uchar*);
     using DLLDestruct = int (*)();
     using DLLCalculate = int (*)(Complex, Complex);
-    using DLLTrace = void (*)(Complex, int&, Complex&, TokenList*, double&, double&);
+    using DLLTrace = void (*)(Complex, int&, Complex&, TokenList, double&, double&);
 
     DLLConstruct constructor;
     DLLInitialise initialise;
@@ -166,7 +161,7 @@ public:
             return 0;
         else if (zoomButton->isChecked())
             return 1;
-        else if (newtonButton->isChecked())
+        else
             return 2;
     }
 
@@ -182,7 +177,7 @@ public:
 
 protected:
     virtual void resizeEvent(QResizeEvent* event);
-    void redraw(Complex, Complex, TokenList *list);
+    void redraw(Complex, Complex, TokenList list);
     void redraw(const Canvas &c)
     {
         dialog->setFormula(c.m_Formula);

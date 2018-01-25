@@ -5,7 +5,7 @@
 
 #include "qdebug.h"
 #include "complex.h"
-#include "infix.h"
+#include "parseformula.h"
 
 namespace Ui {
 class DrawDialog;
@@ -18,14 +18,13 @@ class DrawDialog : public QDialog
 private:
     Ui::DrawDialog *ui;
 
-    infix* formula;
-    TokenList* list;
+    QVector<Token> list;
 
     Complex minimum;
     Complex maximum;
 
 public:
-    explicit DrawDialog(Complex min, Complex max, Token *tokens, int count, QWidget *parent = 0);
+    explicit DrawDialog(QWidget *parent = 0);
     ~DrawDialog();
 
     const Complex& getMin() const { return minimum; }
@@ -36,7 +35,7 @@ public:
     void setMax(const Complex &max);
     void setFormula(const QString &form);
 
-    TokenList* getList() const { return list; }
+    TokenList getList() { return TokenList{list.data(), list.size()}; }
 
 public slots:
     void accept();

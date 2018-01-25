@@ -1,22 +1,16 @@
 #include "drawdialog.h"
 #include "ui_drawdialog.h"
 
-DrawDialog::DrawDialog(Complex min, Complex max, Token* tokens, int count, QWidget *parent) :
+DrawDialog::DrawDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DrawDialog)
 {
     ui->setupUi(this);
 
-    formula = new infix;
+    list.append(Token{1, {0.0,0.0}});
 
-    formula->SetDefault();
-
-    list = new TokenList;
-
-    *list = { tokens, count };
-
-    minimum = min;
-    maximum = max;
+    minimum = Complex{-1.0,-1.0};
+    maximum = Complex{1.0,1.0};
 
     ui->txtMinReal->setText("-1");
     ui->txtMinImag->setText("-1");
@@ -33,8 +27,6 @@ DrawDialog::~DrawDialog()
 
 void DrawDialog::accept()
 {
-
-
     setFormula(ui->txtFormula->toPlainText());
 
     minimum = { ui->txtMinReal->text().toDouble(), ui->txtMinImag->text().toDouble() };
@@ -51,9 +43,16 @@ QString DrawDialog::getFormula() const
 
 void DrawDialog::setFormula(const QString &form)
 {
-    formula->SetInfix(form);
 
-    *list = { formula->GetRPN().data(), formula->GetRPN().size() };
+    try
+    {
+        list = parseFormula::processString(form);
+
+    }
+    catch (const std::exception& e)
+    {
+        qDebug() << e.what();
+    }
 
     ui->txtFormula->setPlainText(form);
 }

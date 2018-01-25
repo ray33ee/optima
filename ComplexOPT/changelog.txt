@@ -10,3 +10,10 @@ Version 1.0.1
 
  - Fixed bug that swapped '+' and '-' operations by swapping enteries in itsOperations list
  - Implement parseformula algorithm (only outputting strings, and NOT a TokenList) and fixed bugs
+
+===========================================================================
+Version 1.0.2
+===========================================================================
+
+ - Cleared various warnings
+ - Got rid of infix.h and prefix.h, replaced with parseformula.h. Yay, finally!

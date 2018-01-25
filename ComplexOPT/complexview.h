@@ -3,7 +3,6 @@
 
 #include <QtGui>
 #include <QGraphicsView>
-#include "infix.h"
 
 #include "mainwindow.h"
 

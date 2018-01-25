@@ -18,16 +18,12 @@ RC_FILE = icon.rc
 SOURCES += main.cpp\
         mainwindow.cpp \
     drawdialog.cpp \
-    prefix.cpp \
     parseformula.cpp
 
 HEADERS  += mainwindow.h \
     complexview.h \
     drawdialog.h \
-    infix.h \
-    prefix.h \
-    parseformula.h \
-    temp.h
+    parseformula.h
 
 FORMS    += mainwindow.ui \
     drawdialog.ui

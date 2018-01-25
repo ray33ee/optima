@@ -1,65 +1,44 @@
 #include "parseformula.h"
 
-#include "qdebug.h"
-
 namespace parseFormula
 {
-
     /* Exception thrown when a left bracket is missing */
     class MissingLeftBracket : public std::exception
     {
-        virtual const char* what() const throw()
-        {
-            return "ParseFormula: Missing left bracket in formula";
-        }
+        virtual const char* what() const throw() { return "ParseFormula: Missing left bracket in formula"; }
     } MLB;
 
     /* Exception thrown when a right bracket is missing */
     class MissingRightBracket : public std::exception
     {
-        virtual const char* what() const throw()
-        {
-            return "ParseFormula: Missing right bracket in formula";
-        }
+        virtual const char* what() const throw() { return "ParseFormula: Missing right bracket in formula"; }
     } MRB;
 
     /* Exception thrown when an invalid character is found in string */
     class InvalidCharacterDetected : public std::exception
     {
-        virtual const char* what() const throw()
-        {
-            return "ParseFormula: Invalid character found in formula";
-        }
+        virtual const char* what() const throw() { return "ParseFormula: Invalid character found in formula"; }
     } ICD;
 
     /* Exception thrown when unknown token is found */
     class UnknownTokenType : public std::exception
     {
-        virtual const char* what() const throw()
-        {
-            return "ParseFormula: Invalid character found in formula";
-        }
+        virtual const char* what() const throw() { return "ParseFormula: Invalid character found in formula"; }
     } UTT;
 
-
-    void removeWhitespace(QString& formula)
-    {
-        formula.remove(QRegExp("[ \n\t]"));
-    }
-
-    bool isNum(const QString &str)
+    inline bool isNum(const QString &str)
     {
         bool res;
         str.toDouble(&res);
         return res;
     }
 
-    bool isOp(const QString &token)
+    inline bool isOp(const QString &token)
     {
         return token == "+" || token == "-" || token == "*" || token == "/" || token == "^" || token == "neg";
     }
 
-    bool isFunction(const QString &token)
+    inline bool isFunction(const QString &token)
     {
         for (auto func : functions)
             if (token == func)
@@ -67,7 +46,7 @@ namespace parseFormula
         return false;
     }
 
-    int getPrecedence(const QString &token)
+    inline int getPrecedence(const QString &token)
     {
         if (token == "+" || token == "-")
             return 1;
@@ -75,39 +54,80 @@ namespace parseFormula
             return 2;
         else if (token == "neg")
             return 3;
-        else if (token == "^")
+        else //if (token == "^")
             return 4;
     }
 
-    bool isUnaryNegative(const QList<QString> & outputQueue, const QStack<QString> &opStack, const QString &prevToken)
+    inline double getIndex(const QString &token)
     {
-        return outputQueue.count() == 0 && opStack.count() == 0 || prevToken == "(" || prevToken  == "neg" || isOp(prevToken);
+        if (isOp(token) && token != "neg")
+        {
+            if (token == "-")
+                return 0.0;
+            else if (token == "+")
+                return 1.0;
+            else if (token == "*")
+                return 2.0;
+            else if (token == "/")
+                return 3.0;
+            else if (token == "^")
+                return 4.0;
+        }
+        else
+        {
+            for (int i = 0; i < size; ++i)
+                if (functions[i] == token)
+                    return i + 5.0;
+        }
+        return -1.0;
     }
 
-    void sendToken(const QString & token, QList<QString> & outputQueue, QStack<QString> &opStack, QString &prev)
+    inline bool isUnaryNegative(const QVector<Token> & outputQueue, const QStack<QString> &opStack, const QString &prevToken)
+    {
+        return (outputQueue.count() == 0 && opStack.count() == 0) || prevToken == "(" || prevToken  == "neg" || isOp(prevToken);
+    }
+
+    void sendToken(const QString & token, QVector<Token> & outputQueue, QStack<QString> &opStack, QString &prev)
     {
         if (!token.isEmpty())
         {
             qDebug() << "Token: " << token << isNum(token);
 
-            if (isNum(token) || token == "z" || token == "i" || token == "pi" || token == "e")
+            if (token == "z")
             {
-                outputQueue.append(token);
+                outputQueue.append(Token{1,{0.0,0.0}});
+
             }
-            else if (isFunction(token))
+            else if (isNum(token))
+            {
+                outputQueue.append(Token{3,{token.toDouble(),0.0}});
+            }
+            else if (token == "i")
+            {
+                outputQueue.append(Token{3,{0.0,1.0}});
+            }
+            else if (token == "pi")
+            {
+                outputQueue.append(Token{3,{M_PI,0.0}});
+            }
+            else if (token == "e")
+            {
+                outputQueue.append(Token{3,{M_E,0.0}});
+            }
+            else if (isFunction(token)) //Non-operator function
             {
                 opStack.push(token);
             }
-            else if (token == ",")
+            else if (token == ",") //Argument seperator
             {
                 while (opStack.count() > 0)
                 {
                     if (opStack.top() == "(")
                         break;
-                    outputQueue.append(opStack.pop());
+                    outputQueue.append(Token{2, {getIndex(opStack.pop()), 0.0}}); //
                 }
             }
-            else if (isOp(token))
+            else if (isOp(token)) //Operator
             {
                 if (token == "-" && isUnaryNegative(outputQueue, opStack, prev))
                 {
@@ -117,37 +137,37 @@ namespace parseFormula
                 {
                     while (!opStack.isEmpty())
                     {
-                        if (isOp(opStack.top()) && getPrecedence(opStack.top()) > getPrecedence(token) || isOp(opStack.top()) && getPrecedence(opStack.top()) == getPrecedence(token) && token != "^" && opStack.top() != "(")
-                            outputQueue.append(opStack.pop());
+                        if ((isOp(opStack.top()) && getPrecedence(opStack.top()) > getPrecedence(token)) || (isOp(opStack.top()) && getPrecedence(opStack.top()) == getPrecedence(token) && token != "^" && opStack.top() != "("))
+                            outputQueue.append(Token{2, {getIndex(opStack.pop()), 0.0}});
                         else
                             break;
                     }
                     opStack.append(token);
                 }
             }
-            else if (token == "(" || token == "{" || token == "[")
+            else if (token == "(" || token == "{" || token == "[") //Left bracket
             {
                 opStack.append("(");
             }
-            else if (token == ")" || token == "}" || token == "]")
+            else if (token == ")" || token == "}" || token == "]") //Right bracket
             {
                 while (!opStack.isEmpty())
                 {
                     if (opStack.top() != "(")
-                        outputQueue.append(opStack.pop());
+                        outputQueue.append(Token{2, {getIndex(opStack.pop()), 0.0}});
                     else
                         break;
                 }
 
-                if (opStack.isEmpty())//If there is no matching parenthesis, error
+                if (opStack.isEmpty()) //If there is no matching parenthesis, error
                     throw MLB;
 
                 opStack.pop();
 
-                if (opStack.isEmpty())//There are no more items on the stack, c'est fini
+                if (opStack.isEmpty()) //There are no more items on the stack, c'est fini
                     return;
                 if (isFunction(opStack.top()) || isOp(opStack.top()))
-                    outputQueue.append(opStack.pop());
+                    outputQueue.append(Token{2, {getIndex(opStack.pop()), 0.0}});
             }
             else
                 throw UTT;
@@ -156,31 +176,31 @@ namespace parseFormula
         }
     }
 
-    void processString(QString formula)
+    QVector<Token> processString(QString formula)
     {
-        QList<QString> outputQueue;
+        QVector<Token> outputQueue;
         QStack<QString> opStack;
         QString buff = "";
         QString prev = "";
 
         qDebug() << "String: " << formula;
 
-        removeWhitespace(formula);
+        //Remove whitespace
+        formula.remove(QRegExp("[ \n\t]"));
 
         qDebug() << "Whitespace removed: " << formula;
 
 
-        for (auto& ch : formula)
+        for (auto it = formula.constBegin(); it != formula.constEnd(); ++it)
         {
-            if (ch.isLetter() || ch.isNumber() || ch == '.')
+            if (it->isLetter() || it->isNumber() || *it == '.') // ||
             {
-                buff += ch;
+                buff += *it;
             }
             else
             {
                 sendToken(buff, outputQueue, opStack, prev);
-                sendToken(ch, outputQueue, opStack, prev);
-
+                sendToken(*it, outputQueue, opStack, prev);
                 buff = "";
             }
         }
@@ -190,7 +210,7 @@ namespace parseFormula
         {
             auto item = opStack.pop();
             if (item != "(")
-                outputQueue.append(item);
+                outputQueue.append(Token{2, {getIndex(item), 0.0}});
             else
                 throw MRB;
         }
@@ -198,6 +218,8 @@ namespace parseFormula
         qDebug() << "START";
 
         for (int i = 0; i < outputQueue.count(); ++i)
-            qDebug() << "TOKENS: " << outputQueue[i];
+            qDebug() << "TOKENS: " << outputQueue[i].type << outputQueue[i].data.real() << outputQueue[i].data.imag();
+
+        return outputQueue;
     }
 }

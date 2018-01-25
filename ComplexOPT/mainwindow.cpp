@@ -89,7 +89,7 @@ MainWindow::MainWindow(QWidget *parent) :
     tokens[0] = { 1, {0, 0} };
 
     //Setup dialog object
-    dialog = new DrawDialog(Complex(-1,-1), Complex(1,1), tokens, 1, this);
+    dialog = new DrawDialog(this);
     dialog->setModal(true);
     dialog->setFormula("z");
 
@@ -209,7 +209,7 @@ void MainWindow::toggleNewton(bool checked)
     }
 }
 
-void MainWindow::redraw(Complex min, Complex max, TokenList* list)
+void MainWindow::redraw(Complex min, Complex max, TokenList list)
 {
     if (lib->isLoaded())
     {
@@ -366,14 +366,9 @@ void MainWindow:: buttonNew()
 {
     LinearUndo<Canvas>::instance().append({dialog->getMin(), dialog->getMax(), dialog->getFormula()});
 
-    try
-    {
-        parseFormula::processString(dialog->getFormula());
-    }
-    catch (const std::exception& e)
-    {
-        qDebug() << e.what();
-    }
+
+
+
 
     redraw(dialog->getMin(), dialog->getMax(), dialog->getList());
 }
