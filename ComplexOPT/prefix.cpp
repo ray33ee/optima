@@ -4,8 +4,8 @@
 
 void prefix::SetDefault()
 {
-    itsOperations.append("+");
     itsOperations.append("-");
+    itsOperations.append("+");
     itsOperations.append("*");
     itsOperations.append("/");
     itsOperations.append("^");

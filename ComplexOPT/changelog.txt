@@ -4,3 +4,9 @@ Version 1.0.0
 
     *** No changes ***
 
+===========================================================================
+Version 1.0.1
+===========================================================================
+
+ - Fixed bug that swapped '+' and '-' operations by swapping enteries in itsOperations list
+ - Implement parseformula algorithm (only outputting strings, and NOT a TokenList) and fixed bugs

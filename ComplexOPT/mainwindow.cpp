@@ -225,10 +225,6 @@ void MainWindow::redraw(Complex min, Complex max, TokenList* list)
         scene->addPixmap(QPixmap::fromImage(*image));
 
     }
-    /*QString stuff = "z^2 + sin(4*z) - 12";
-    qDebug() << stuff;
-    parseFormula::processString(stuff);
-    qDebug() << stuff;*/
 }
 
 void MainWindow::retrace(const QPoint &event)
@@ -366,11 +362,18 @@ void MainWindow::menuTriggered(QAction *action)
     }
 }
 
-void MainWindow::buttonNew()
+void MainWindow:: buttonNew()
 {
     LinearUndo<Canvas>::instance().append({dialog->getMin(), dialog->getMax(), dialog->getFormula()});
 
-
+    try
+    {
+        parseFormula::processString(dialog->getFormula());
+    }
+    catch (const std::exception& e)
+    {
+        qDebug() << e.what();
+    }
 
     redraw(dialog->getMin(), dialog->getMax(), dialog->getList());
 }

@@ -6,3 +6,9 @@ Long term to do list:
       Must account for resized screen. Object must be cleared if  a) the domain is changed to be outside the zero, b) a new function is drawn c) the user selects a different togglable click (either pan or rectangle zoom)
     - Detect when another instance of ComplexOPT is running, warn user, and disable all functionality.
     - Investigate leading double slash '//' error.
+
+
+Short term to do:
+
+    - Modify parseformula to output TokenList*, instead of string tokens.
+    - Check TokenList* when created to validate list.
