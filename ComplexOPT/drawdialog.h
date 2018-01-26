@@ -4,7 +4,6 @@
 #include <QDialog>
 
 #include "qdebug.h"
-#include "complex.h"
 #include "parseformula.h"
 
 namespace Ui {

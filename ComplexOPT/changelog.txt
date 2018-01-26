@@ -17,3 +17,11 @@ Version 1.0.2
 
  - Cleared various warnings
  - Got rid of infix.h and prefix.h, replaced with parseformula.h. Yay, finally!
+
+===========================================================================
+Version 1.0.3
+===========================================================================
+
+ - Declared but not used warning cleared from functions[] declaration
+ - Gradient function implemented using fast machine epsilon algorithm
+ - Newton-raphson function implemented, only basic GUI support (simple message box with copy to clipboard)

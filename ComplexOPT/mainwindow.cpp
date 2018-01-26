@@ -1,11 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
     ui->setupUi(this);
 
     ui->complexView->setWindowParent(this);
@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     zoomButton->setCheckable(true);
     newtonButton->setCheckable(true);
 
-    //COnnect toggle slots
+    //Connect toggle slots
     connect(panButton, SIGNAL(toggled(bool)), this, SLOT(togglePan(bool)));
     connect(zoomButton, SIGNAL(toggled(bool)), this, SLOT(toggleZoom(bool)));
     connect(newtonButton, SIGNAL(toggled(bool)), this, SLOT(toggleNewton(bool)));
@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //Allow constant tracking for mouse move
     ui->complexView->setMouseTracking(true);
 
-    //Add buttons and seperators to toolbar
+    //Add buttons with tooltiptext and seperators to toolbar
     ui->toolBar->addAction(newButton);
     ui->toolBar->addSeparator();
 
@@ -52,8 +52,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->toolBar->addAction(panButton);
     ui->toolBar->addAction(zoomButton);
-    ui->toolBar->addSeparator();
-
     ui->toolBar->addAction(newtonButton);
     ui->toolBar->addSeparator();
 
@@ -83,11 +81,6 @@ MainWindow::MainWindow(QWidget *parent) :
     zinButton->setToolTip("Zoom in");
     zoutButton->setToolTip("Zoom out");
 
-
-    //Setup tokens
-    auto tokens = new Token[1];
-    tokens[0] = { 1, {0, 0} };
-
     //Setup dialog object
     dialog = new DrawDialog(this);
     dialog->setModal(true);
@@ -105,14 +98,15 @@ MainWindow::MainWindow(QWidget *parent) :
     outmod = new QLabel("Mod: ");
     outarg = new QLabel("Arg: ");
 
+    //Allow label to change color
     color->setAutoFillBackground(true);
 
+    //Setup initial color in statusbar
     QPalette p = palette();
-
     p.setColor(QPalette::Background, Qt::white);
-
     color->setPalette(p);
 
+    //Bind widgets to statusbar
     ui->statusBar->addPermanentWidget(color);
     ui->statusBar->addPermanentWidget(inreal);
     ui->statusBar->addPermanentWidget(inimag);
@@ -137,8 +131,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
         //qDebug() << "Error loading cooda library: " << lib->errorString();
-        QMessageBox* coodaError = new QMessageBox(QMessageBox::Critical, "Cooda DLL Error", "Error loading cooda.dll library - '" + lib->errorString() + "'", QMessageBox::Ok);
-        coodaError->show();
+        QMessageBox coodaError(QMessageBox::Critical, "Cooda DLL Error", "Error loading cooda.dll library - '" + lib->errorString() + "'", QMessageBox::Ok);
+        coodaError.show();
 
         ui->action_New->setEnabled(false);
         ui->actionRefresh->setEnabled(false);
@@ -165,6 +159,8 @@ MainWindow::MainWindow(QWidget *parent) :
         calculate = (DLLCalculate)lib->resolve("entryCalculate");
         destructor = (DLLDestruct)lib->resolve("entryDestruct");
         trace = (DLLTrace)lib->resolve("entryTrace");
+        gradient = (DLLGradient)lib->resolve("entryGradient");
+        newton = (DLLNewton)lib->resolve("entryNewtonRaphson");
 
         //qDebug() << "Construct error: " <<
         constructor(0);
@@ -174,12 +170,6 @@ MainWindow::MainWindow(QWidget *parent) :
         scene = new QGraphicsScene();
         ui->complexView->setScene(scene);
     }
-
-
-    //Work in progress...
-    newtonButton->setEnabled(false);
-
-
 }
 
 void MainWindow::togglePan(bool checked)
@@ -213,17 +203,12 @@ void MainWindow::redraw(Complex min, Complex max, TokenList list)
 {
     if (lib->isLoaded())
     {
-
-
-        //qDebug() << "Initialise error:" <<
         initialise(image->width(), image->height(), list, image->bits());
 
-        //qDebug() << "Calculate error: " <<
         calculate(min, max);
 
         scene->clear();
         scene->addPixmap(QPixmap::fromImage(*image));
-
     }
 }
 
@@ -249,7 +234,7 @@ void MainWindow::retrace(const QPoint &event)
             min.imag() + diff.imag() * (event.y()) / image->height()
         };
 
-    trace(z, col, ans, dialog->getList(), mod, arg);
+    trace(z, dialog->getList(), &ans, &col, &mod, &arg);
 
     QPalette p = palette();
 
@@ -268,9 +253,23 @@ void MainWindow::retrace(const QPoint &event)
 
 }
 
+void MainWindow::find_root(const Complex &c)
+{
+    auto xn = newton(dialog->getList(), c, 100);
+
+    auto strXn = QString::number(xn.real()) + (xn.imag() < 0 ? " - " : " + ") + QString::number(fabs(xn.imag())) + "*i";
+
+    QMessageBox displayNewton(QMessageBox::Question, "Root found",
+                                                 "Root found at z = " + strXn + ". Save to clipboard?",
+                                                 QMessageBox::No | QMessageBox::Yes);
+
+    if (displayNewton.exec() == QMessageBox::Yes)
+        QApplication::clipboard()->setText(strXn);
+}
+
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-    ui->complexView->setGeometry(ui->complexView->x(), ui->complexView->y(), ui->centralWidget->width() - 20, ui->centralWidget->height() - 20);
+    ui->complexView->setGeometry(ui->complexView->x(), ui->complexView->y(), event->size().width() - 20, event->size().height() - 20);
 
     if (!lib->load())
         return;
@@ -366,11 +365,9 @@ void MainWindow:: buttonNew()
 {
     LinearUndo<Canvas>::instance().append({dialog->getMin(), dialog->getMax(), dialog->getFormula()});
 
-
-
-
-
     redraw(dialog->getMin(), dialog->getMax(), dialog->getList());
+
+
 }
 
 //(((((z^2 + z)^2 + z)^2 + z)^2 + z) ^ 2 + z)^2 + z

@@ -2,6 +2,12 @@
 
 namespace parseFormula
 {
+    /* List of functions */
+    static const char* functions[] = { "log", "neg", "conj", "sqrt", "ln", "exp", "sinh", "cosh", "tanh", "sin", "cos", "tan", "asinh", "acosh", "atanh", "asin", "acos", "atan", "inv", "mod", "arg" };
+
+    /* Number of non-operator functions */
+    static const int size = 21;
+
     /* Exception thrown when a left bracket is missing */
     class MissingLeftBracket : public std::exception
     {
@@ -94,26 +100,15 @@ namespace parseFormula
             qDebug() << "Token: " << token << isNum(token);
 
             if (token == "z")
-            {
                 outputQueue.append(Token{1,{0.0,0.0}});
-
-            }
             else if (isNum(token))
-            {
                 outputQueue.append(Token{3,{token.toDouble(),0.0}});
-            }
             else if (token == "i")
-            {
                 outputQueue.append(Token{3,{0.0,1.0}});
-            }
             else if (token == "pi")
-            {
                 outputQueue.append(Token{3,{M_PI,0.0}});
-            }
             else if (token == "e")
-            {
                 outputQueue.append(Token{3,{M_E,0.0}});
-            }
             else if (isFunction(token)) //Non-operator function
             {
                 opStack.push(token);

@@ -10,5 +10,6 @@
         <file>resources/toolbar/zoomin.png</file>
         <file>resources/toolbar/zoomout.png</file>
         <file>resources/toolbar/newton.png</file>
+        <file>resources/icons/Final.ico</file>
     </qresource>
 </RCC>

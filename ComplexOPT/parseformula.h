@@ -3,14 +3,12 @@
 
 #include <exception>
 #include <QString>
-
 #include <QList>
 #include <QVector>
-#include <QString>
 #include <QStack>
+#include <complex>
 
 #include "qdebug.h"
-#include <complex>
 
 using Complex = std::complex<double>;
 
@@ -45,12 +43,6 @@ namespace parseFormula
 
     /* Exception thrown when unknown token is found */
     class UnknownTokenType;
-
-    /* List of functions */
-    static const char* functions[] = { "log", "neg", "conj", "sqrt", "ln", "exp", "sinh", "cosh", "tanh", "sin", "cos", "tan", "asinh", "acosh", "atanh", "asin", "acos", "atan", "inv", "mod", "arg" };
-
-    /* Number of non-operator functions */
-    static const int size = 21;
 
     bool isNum(const QString &);
 

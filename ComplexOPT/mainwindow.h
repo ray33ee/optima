@@ -4,16 +4,16 @@
 #include <QMainWindow>
 
 #include <QtGui>
-#include <QGraphicsView>
+#include <QGraphicsScene>
 #include "drawdialog.h"
-#include <QAction>
-#include "QLabel"
-#include "QMessageBox"
-#include "QFileDialog"
-
+#include <QAction>          //For the toolbar buttons
+#include <QLabel>           //For the status bar labels
+#include <QMessageBox>      //Message box to display errors
+#include <QAbstractButton>
+#include <QFileDialog>      //Prompt user for location to save image
 #include <QVector>
-
 #include <complex>
+
 
 
 using Complex = std::complex<double>;
@@ -98,6 +98,7 @@ public:
 
 
     void retrace(const QPoint&);
+    void find_root(const Complex &);
 
 private:
     Ui::MainWindow *ui;
@@ -107,13 +108,17 @@ private:
     using DLLInitialise = int (*)(unsigned, unsigned, TokenList, uchar*);
     using DLLDestruct = int (*)();
     using DLLCalculate = int (*)(Complex, Complex);
-    using DLLTrace = void (*)(Complex, int&, Complex&, TokenList, double&, double&);
+    using DLLTrace = void (*)(Complex, TokenList, Complex*, int*, double*, double*);
+    using DLLGradient = Complex (*)(TokenList, Complex);
+    using DLLNewton = Complex(*)(TokenList, Complex, int);
 
     DLLConstruct constructor;
     DLLInitialise initialise;
     DLLCalculate calculate;
     DLLDestruct destructor;
     DLLTrace trace;
+    DLLGradient gradient;
+    DLLNewton newton;
 
     QAction* newButton;
     QAction* saveButton;
@@ -176,7 +181,7 @@ public:
 
 
 protected:
-    virtual void resizeEvent(QResizeEvent* event);
+    virtual void resizeEvent(QResizeEvent*);
     void redraw(Complex, Complex, TokenList list);
     void redraw(const Canvas &c)
     {

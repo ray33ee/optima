@@ -17,10 +17,10 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Complex Function Grapher</string>
+   <string>Optima</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="icons.qrc">
     <normaloff>:/icons/resources/icons/Final.ico</normaloff>:/icons/resources/icons/Final.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -153,7 +153,9 @@
    <header>complexview.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>toolBar</sender>

@@ -53,7 +53,22 @@ protected:
                 m_Parent->getDialog()->setMax({(max.real() - min.real()) / width() * event->pos().x() + min.real(), (max.imag() - min.imag()) / height() * event->pos().y() + min.imag()});}
                 break;
             case 2: //newton
+                {
+                    auto max = m_Parent->getDialog()->getMax();
 
+                    auto min = m_Parent->getDialog()->getMin();
+
+                    auto diff = max - min;
+
+                    Complex z = {
+                            min.real() + diff.real() * (pressPos.x()) / width(),
+                            min.imag() + diff.imag() * (pressPos.y()) / height()
+                        };
+
+                    m_Parent->find_root(z);
+
+
+                }
                 break;
         }
         m_Parent->buttonNew();
