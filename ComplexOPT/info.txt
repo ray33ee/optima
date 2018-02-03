@@ -11,7 +11,7 @@ Short term to do:
 
     - Handle exceptions from parseformula with message boxes, do not allow user to leave drawdialog without a valid formula
     - Check formula by making sure only a single item remains on the stack after the TokenList is evaluated
-    - Evaluate min and max domains from dialog as expressions
     - Add text-based calculator in the form of an inputbox
     - Any functions where all the operands are constants should be pre-evaluated. for example z*sin(2) should be sent as z*0.909297.
     - Add support for scientific notation (3.2e+22)
+    - After a root is found with newton-raphson, calculate and show user f(a).

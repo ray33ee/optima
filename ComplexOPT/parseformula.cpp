@@ -68,9 +68,9 @@ namespace parseFormula
     {
         if (isOp(token) && token != "neg")
         {
-            if (token == "-")
+            if (token == "+")
                 return 0.0;
-            else if (token == "+")
+            else if (token == "-")
                 return 1.0;
             else if (token == "*")
                 return 2.0;
