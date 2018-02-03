@@ -100,8 +100,6 @@ public:
     void retrace(const QPoint&);
     void find_root(const Complex &);
 
-    Complex evaluate(const TokenList &);
-
 private:
     Ui::MainWindow *ui;
 

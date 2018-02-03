@@ -1,8 +1,6 @@
 #include "drawdialog.h"
 #include "ui_drawdialog.h"
 
-#include "mainwindow.h"
-
 DrawDialog::DrawDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DrawDialog)
@@ -14,8 +12,10 @@ DrawDialog::DrawDialog(QWidget *parent) :
     minimum = Complex{-1.0,-1.0};
     maximum = Complex{1.0,1.0};
 
-    ui->txtMinimum->setText("-1-i");
-    ui->txtMaximum->setText("1+i");
+    ui->txtMinReal->setText("-1");
+    ui->txtMinImag->setText("-1");
+    ui->txtMaxReal->setText("1");
+    ui->txtMaxImag->setText("1");
 
     ui->txtFormula->setPlainText("z");
 }
@@ -29,11 +29,8 @@ void DrawDialog::accept()
 {
     setFormula(ui->txtFormula->toPlainText());
 
-    auto minList = parseFormula::processString(ui->txtMinimum->text());
-    auto maxList = parseFormula::processString(ui->txtMaximum->text());
-
-    minimum = ((MainWindow*)parent())->evaluate(TokenList{minList.data(), minList.size()});
-    maximum = ((MainWindow*)parent())->evaluate(TokenList{maxList.data(), maxList.size()});
+    minimum = { ui->txtMinReal->text().toDouble(), ui->txtMinImag->text().toDouble() };
+    maximum = { ui->txtMaxReal->text().toDouble(), ui->txtMaxImag->text().toDouble() };
 
     QDialog::accept();
 }
@@ -50,6 +47,7 @@ void DrawDialog::setFormula(const QString &form)
     try
     {
         list = parseFormula::processString(form);
+
     }
     catch (const std::exception& e)
     {
@@ -62,11 +60,15 @@ void DrawDialog::setFormula(const QString &form)
 void DrawDialog::setMin(const Complex &min)
 {
     minimum = min;
-    ui->txtMinimum->setText(QString::number(minimum.real()) + (minimum.imag() < 0 ? " - " : " + ") + QString::number(fabs(minimum.imag())) + "*i");
+
+    ui->txtMinReal->setText(QString::number(minimum.real()));
+    ui->txtMinImag->setText(QString::number(minimum.imag()));
 }
 
 void DrawDialog::setMax(const Complex &max)
 {
     maximum = max;
-    ui->txtMaximum->setText(QString::number(maximum.real()) + (maximum.imag() < 0 ? " - " : " + ") + QString::number(fabs(maximum.imag())) + "*i");
+
+    ui->txtMaxReal->setText(QString::number(maximum.real()));
+    ui->txtMaxImag->setText(QString::number(maximum.imag()));
 }

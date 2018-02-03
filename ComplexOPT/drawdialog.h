@@ -6,9 +6,6 @@
 #include "qdebug.h"
 #include "parseformula.h"
 
-
-class MainWindow;
-
 namespace Ui {
 class DrawDialog;
 }

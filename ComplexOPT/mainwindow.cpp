@@ -1,8 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "drawdialog.h"
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -267,15 +265,6 @@ void MainWindow::find_root(const Complex &c)
 
     if (displayNewton.exec() == QMessageBox::Yes)
         QApplication::clipboard()->setText(strXn);
-}
-
-Complex MainWindow::evaluate(const TokenList &list)
-{
-    Complex ans;
-    int a;
-    double b,c;
-    trace(Complex{0.0,0.0},list, &ans, &a, &b, &c);
-    return ans;
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)
