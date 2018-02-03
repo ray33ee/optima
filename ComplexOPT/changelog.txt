@@ -25,3 +25,10 @@ Version 1.0.3
  - Declared but not used warning cleared from functions[] declaration
  - Gradient function implemented using fast machine epsilon algorithm
  - Newton-raphson function implemented, only basic GUI support (simple message box with copy to clipboard)
+
+===========================================================================
+Version 1.0.4
+===========================================================================
+
+ - Swapped "+" with "-" so "+" comes first.
+ - Min and max domain inputs are now handled as expressions, so things like pi*e-sin(2)*i are allowed

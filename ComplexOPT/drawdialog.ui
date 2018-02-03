@@ -90,12 +90,12 @@
      <string>Maximum:</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="txtMinReal">
+   <widget class="QLineEdit" name="txtMinimum">
     <property name="geometry">
      <rect>
       <x>70</x>
       <y>30</y>
-      <width>171</width>
+      <width>351</width>
       <height>20</height>
      </rect>
     </property>
@@ -137,32 +137,12 @@
      </palette>
     </property>
    </widget>
-   <widget class="QLineEdit" name="txtMaxReal">
+   <widget class="QLineEdit" name="txtMaximum">
     <property name="geometry">
      <rect>
       <x>70</x>
       <y>60</y>
-      <width>171</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="txtMinImag">
-    <property name="geometry">
-     <rect>
-      <x>260</x>
-      <y>30</y>
-      <width>171</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="txtMaxImag">
-    <property name="geometry">
-     <rect>
-      <x>260</x>
-      <y>60</y>
-      <width>171</width>
+      <width>351</width>
       <height>20</height>
      </rect>
     </property>
