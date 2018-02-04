@@ -32,3 +32,14 @@ Version 1.0.4
 
  - Swapped "+" with "-" so "+" comes first.
  - Min and max domain inputs are now handled as expressions, so things like pi*e-sin(2)*i are allowed
+
+===========================================================================
+Version 1.0.5
+===========================================================================
+
+ - Fixed domain coordinate bug (Min and max are displayed at bottom left and top right, but were
+   taken as top left and bottomn right, since the array of colors starts at top left)
+ - Rectangle zoom changed so that whatever corners the user starts and finishes with when selecting,
+   the resulting map is the same.
+ - Empty Qt form for the calculator is added, no implementation yet.
+ - Removed qDebug functions from parseformula

@@ -97,8 +97,6 @@ namespace parseFormula
     {
         if (!token.isEmpty())
         {
-            qDebug() << "Token: " << token << isNum(token);
-
             if (token == "z")
                 outputQueue.append(Token{1,{0.0,0.0}});
             else if (isNum(token))
@@ -178,13 +176,8 @@ namespace parseFormula
         QString buff = "";
         QString prev = "";
 
-        qDebug() << "String: " << formula;
-
         //Remove whitespace
         formula.remove(QRegExp("[ \n\t]"));
-
-        qDebug() << "Whitespace removed: " << formula;
-
 
         for (auto it = formula.constBegin(); it != formula.constEnd(); ++it)
         {
@@ -209,11 +202,6 @@ namespace parseFormula
             else
                 throw MRB;
         }
-
-        qDebug() << "START";
-
-        for (int i = 0; i < outputQueue.count(); ++i)
-            qDebug() << "TOKENS: " << outputQueue[i].type << outputQueue[i].data.real() << outputQueue[i].data.imag();
 
         return outputQueue;
     }

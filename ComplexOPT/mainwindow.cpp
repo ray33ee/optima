@@ -201,13 +201,17 @@ void MainWindow::toggleNewton(bool checked)
     }
 }
 
-void MainWindow::redraw(Complex min, Complex max, TokenList list)
+void MainWindow::redraw(Complex minimum, Complex maximum, TokenList list)
 {
+    /*auto minimum = Complex(min.real(), max.imag());
+
+    auto maximum = Complex(max.real(), min.imag());*/
+
     if (lib->isLoaded())
     {
         initialise(image->width(), image->height(), list, image->bits());
 
-        calculate(min, max);
+        calculate(minimum, maximum);
 
         scene->clear();
         scene->addPixmap(QPixmap::fromImage(*image));
@@ -219,11 +223,13 @@ void MainWindow::retrace(const QPoint &event)
     if (!lib->load())
         return;
 
-    auto max = dialog->getMax();
+    //auto last = dialog->getMax();
+    //auto min = dialog->getMin();
 
-    auto min = dialog->getMin();
+    auto first = Complex(dialog->getMin().real(), dialog->getMax().imag());
+    auto last = Complex(dialog->getMax().real(), dialog->getMin().imag());
 
-    auto diff = max - min;
+    auto diff = last - first;
 
     int col;
 
@@ -232,8 +238,8 @@ void MainWindow::retrace(const QPoint &event)
     Complex ans;
 
     Complex z = {
-            min.real() + diff.real() * (event.x()) / image->width(),
-            min.imag() + diff.imag() * (event.y()) / image->height()
+            first.real() + diff.real() * (event.x()) / image->width(),
+            first.imag() + diff.imag() * (event.y()) / image->height()
         };
 
     trace(z, dialog->getList(), &ans, &col, &mod, &arg);
