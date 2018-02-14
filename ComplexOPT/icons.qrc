@@ -11,5 +11,6 @@
         <file>resources/toolbar/zoomout.png</file>
         <file>resources/toolbar/newton.png</file>
         <file>resources/icons/Final.ico</file>
+        <file>resources/toolbar/Calculator.png</file>
     </qresource>
 </RCC>

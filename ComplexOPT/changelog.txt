@@ -43,3 +43,15 @@ Version 1.0.5
    the resulting map is the same.
  - Empty Qt form for the calculator is added, no implementation yet.
  - Removed qDebug functions from parseformula
+
+===========================================================================
+Version 1.0.6
+===========================================================================
+
+ - When a root is found, f(a) is also displayed
+ - Added support for scientific notation
+ - When DLL is not found, items in toolbar are disabled automatically (via iteration through list)
+ - Exceptions from parseformula handled appropriately, forbidding the user from leaving the drawdialog without valid formulas/expressions
+ - Expressions are verified by making sure only a single element exists on the stack after the expression is evaluated
+ - 'image' member is initialised as nullptr to avoid double delete (fixes crash when exit if dll not found bug)
+ - DrawDialog constructor cleaned up

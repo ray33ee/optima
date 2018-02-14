@@ -26,8 +26,7 @@ HEADERS  += mainwindow.h \
     parseformula.h
 
 FORMS    += mainwindow.ui \
-    drawdialog.ui \
-    calculatordialog.ui
+    drawdialog.ui
 
 RESOURCES += \
     icons.qrc
@@ -35,4 +34,5 @@ RESOURCES += \
 DISTFILES += \
     info.txt \
     icon.rc \
-    changelog.txt
+    changelog.txt \
+    spec.txt

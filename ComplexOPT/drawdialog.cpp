@@ -9,15 +9,12 @@ DrawDialog::DrawDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    list.append(Token{1, {0.0,0.0}});
+    setModal(true);
 
-    minimum = Complex{-1.0,-1.0};
-    maximum = Complex{1.0,1.0};
+    setMin(Complex{-1.0,-1.0});
+    setMax(Complex{1.0,1.0});
 
-    ui->txtMinimum->setText("-1-i");
-    ui->txtMaximum->setText("1+i");
-
-    ui->txtFormula->setPlainText("z");
+    setFormula("z");
 }
 
 DrawDialog::~DrawDialog()
@@ -27,17 +24,22 @@ DrawDialog::~DrawDialog()
 
 void DrawDialog::accept()
 {
-    setFormula(ui->txtFormula->toPlainText());
+    try
+    {
+        setFormula(ui->txtFormula->toPlainText());
+        auto minList = parseFormula::processString(ui->txtMinimum->text(), true);
+        auto maxList = parseFormula::processString(ui->txtMaximum->text(), true);
 
-    auto minList = parseFormula::processString(ui->txtMinimum->text());
-    auto maxList = parseFormula::processString(ui->txtMaximum->text());
+        minimum = ((MainWindow*)parent())->evaluate(TokenList{minList.data(), minList.size()});
+        maximum = ((MainWindow*)parent())->evaluate(TokenList{maxList.data(), maxList.size()});
 
-    minimum = ((MainWindow*)parent())->evaluate(TokenList{minList.data(), minList.size()});
-    maximum = ((MainWindow*)parent())->evaluate(TokenList{maxList.data(), maxList.size()});
-
-    QDialog::accept();
+        QDialog::accept();
+    }
+    catch (const std::exception &e)
+    {
+        QMessageBox::warning(this, "Optima", "Formula error - " + QString(e.what()), QMessageBox::Ok);
+    }
 }
-
 
 QString DrawDialog::getFormula() const
 {
@@ -46,16 +48,7 @@ QString DrawDialog::getFormula() const
 
 void DrawDialog::setFormula(const QString &form)
 {
-
-    try
-    {
-        list = parseFormula::processString(form);
-    }
-    catch (const std::exception& e)
-    {
-        qDebug() << e.what();
-    }
-
+    list = parseFormula::processString(form, false);
     ui->txtFormula->setPlainText(form);
 }
 

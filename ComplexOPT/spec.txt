@@ -1,0 +1,7 @@
+The following document outlines a brief specification of the optima and cuRIEMANN code:
+
+ - Fast         Highly optimised code for fast, almost real time calculations are the reason this project was started. Taking advantage of the hardware (GPU, multithreading, etc.) is key here.
+ - Accurate     High accuracy is vital, even though values are all rounded to the nearest 1 in 256 (all values are converted to a pixel color)
+ - Intuitive    Many other similar aspplications had a steep learning curve and difficult to navigate UI, so an intuitive UI is very important
+
+ "An engineer knows when he is done not when there is nothing left to add, but when there is nothing left to take away"

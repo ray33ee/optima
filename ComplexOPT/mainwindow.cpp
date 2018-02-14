@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // Initialise toollbar buttons
     newButton = new QAction(QIcon(":/icons/resources/toolbar/new.bmp"), "", ui->toolBar);
 
+
+
     saveButton = new QAction(QIcon(":/icons/resources/toolbar/save.bmp"), "", ui->toolBar);
 
     panButton = new QAction(QIcon(":/icons/resources/toolbar/pan.bmp"), "", ui->toolBar);
@@ -22,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
     newtonButton = new QAction(QIcon(":/icons/resources/toolbar/newton.png"), "", ui->toolBar);
 
     refreshButton = new QAction(QIcon(":/icons/resources/toolbar/refresh.bmp"), "", ui->toolBar);
+
+    calculatorButton = new QAction(QIcon(":/icons/resources/toolbar/Calculator.png"), "", ui->toolBar);
 
     undoButton = new QAction(QIcon(":/icons/resources/toolbar/undo.bmp"), "", ui->toolBar);
     redoButton = new QAction(QIcon(":/icons/resources/toolbar/redo.bmp"), "", ui->toolBar);
@@ -60,6 +64,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBar->addAction(refreshButton);
     ui->toolBar->addSeparator();
 
+    ui->toolBar->addAction(calculatorButton);
+    ui->toolBar->addSeparator();
+
     ui->toolBar->addAction(undoButton);
     ui->toolBar->addAction(redoButton);
     ui->toolBar->addSeparator();
@@ -77,6 +84,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     refreshButton->setToolTip("Refresh screen");
 
+    calculatorButton->setToolTip("Calculator dialog");
+
     undoButton->setToolTip("Undo last action");
     redoButton->setToolTip("Redo last action");
 
@@ -85,8 +94,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Setup dialog object
     dialog = new DrawDialog(this);
-    dialog->setModal(true);
-    dialog->setFormula("z");
 
     //Setup undo/redo history
     LinearUndo<Canvas>::instance().append({dialog->getMin(), dialog->getMax(), dialog->getFormula()});
@@ -128,13 +135,17 @@ MainWindow::MainWindow(QWidget *parent) :
     outarg->setToolTip("Codomain argument");
 
     lib = new QLibrary("cuRIEMANN.dll");
+
+    image = nullptr;
+
+
     if (!lib->load()) //If there is an issue loading cooda.dll, inform the user and disable all buttons and functions
     {
 
 
         //qDebug() << "Error loading cooda library: " << lib->errorString();
-        QMessageBox coodaError(QMessageBox::Critical, "Cooda DLL Error", "Error loading cooda.dll library - '" + lib->errorString() + "'", QMessageBox::Ok);
-        coodaError.show();
+
+        QMessageBox::critical(this, "Cooda DLL Error", "Error loading cooda.dll library - '" + lib->errorString() + "'", QMessageBox::Ok);
 
         ui->action_New->setEnabled(false);
         ui->actionRefresh->setEnabled(false);
@@ -142,16 +153,9 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->action_Redo->setEnabled(false);
         ui->action_Undo->setEnabled(false);
 
-        newButton->setEnabled(false);
-        saveButton->setEnabled(false);
-        panButton->setEnabled(false);
-        zoomButton->setEnabled(false);
-        newtonButton->setEnabled(false);
-        refreshButton->setEnabled(false);
-        undoButton->setEnabled(false);
-        redoButton->setEnabled(false);
-        zinButton->setEnabled(false);
-        zoutButton->setEnabled(false);
+        //Disable all buttons in toolbar
+        for (auto& a : ui->toolBar->actions())
+            a->setEnabled(false);
 
     }
     else
@@ -167,7 +171,6 @@ MainWindow::MainWindow(QWidget *parent) :
         //qDebug() << "Construct error: " <<
         constructor(0);
 
-        image = nullptr;
 
         scene = new QGraphicsScene();
         ui->complexView->setScene(scene);
@@ -267,11 +270,17 @@ void MainWindow::find_root(const Complex &c)
 
     auto strXn = QString::number(xn.real()) + (xn.imag() < 0 ? " - " : " + ") + QString::number(fabs(xn.imag())) + "*i";
 
-    QMessageBox displayNewton(QMessageBox::Question, "Root found",
-                                                 "Root found at z = " + strXn + ". Save to clipboard?",
-                                                 QMessageBox::No | QMessageBox::Yes);
+    int col; double mod, arg; Complex fz;
 
-    if (displayNewton.exec() == QMessageBox::Yes)
+    trace(xn, dialog->getList(), &fz, &col, &mod, &arg);
+
+    auto strFz = QString::number(fz.real()) + (fz.imag() < 0 ? " - " : " + ") + QString::number(fabs(fz.imag())) + "*i";
+
+    auto ret = QMessageBox::question(this, "Root found",
+                          "Root found at z = " + strXn + " (f(z) = " + strFz + "). Save to clipboard?",
+                          QMessageBox::No | QMessageBox::Yes);
+
+    if (ret == QMessageBox::Yes)
         QApplication::clipboard()->setText(strXn);
 }
 
@@ -331,6 +340,10 @@ void MainWindow::toolbarTriggered(QAction *action)
     {
         buttonRefresh();
     }
+    else if (action == calculatorButton)
+    {
+
+    }
     else if (action == undoButton)
     {
         buttonUndo();
@@ -346,6 +359,10 @@ void MainWindow::toolbarTriggered(QAction *action)
     else if (action == zoutButton)
     {
         centerZoom(1.0);
+    }
+    else if (action == calculatorButton)
+    {
+
     }
 }
 

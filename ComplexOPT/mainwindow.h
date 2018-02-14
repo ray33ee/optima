@@ -128,10 +128,12 @@ private:
     QAction* zoomButton;
     QAction* newtonButton;
     QAction* refreshButton;
+    QAction* calculatorButton;
     QAction* undoButton;
     QAction* redoButton;
     QAction* zinButton;
     QAction* zoutButton;
+
 
     QLabel* color;
     QLabel* inreal;

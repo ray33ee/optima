@@ -20,17 +20,17 @@ namespace parseFormula
         virtual const char* what() const throw() { return "ParseFormula: Missing right bracket in formula"; }
     } MRB;
 
-    /* Exception thrown when an invalid character is found in string */
-    class InvalidCharacterDetected : public std::exception
-    {
-        virtual const char* what() const throw() { return "ParseFormula: Invalid character found in formula"; }
-    } ICD;
-
     /* Exception thrown when unknown token is found */
     class UnknownTokenType : public std::exception
     {
-        virtual const char* what() const throw() { return "ParseFormula: Invalid character found in formula"; }
+        virtual const char* what() const throw() { return "ParseFormula: Invalid sequence found in formula"; }
     } UTT;
+
+    /* Exception thrown when operator is not used properly */
+    class OperatorAbuse : public std::exception
+    {
+        virtual const char* what() const throw() { return "ParseFormula: Operator not used properly"; }
+    } OA;
 
     inline bool isNum(const QString &str)
     {
@@ -169,7 +169,20 @@ namespace parseFormula
         }
     }
 
-    QVector<Token> processString(QString formula)
+    bool verify_formula(const QVector<Token> &f)
+    {
+        int pretend_stack_size = 0;
+        for (auto it = f.begin(); it != f.end(); ++it)
+        {
+            if (it->type == 1 || it->type == 3) //If its z or constant we push (so add 1)
+                ++pretend_stack_size;
+            else if (it->type == 2 && it->data.real() < 6) //If its binary operator we pop 2 and push 1 (so decrement 1)
+                --pretend_stack_size;
+        }
+        return (pretend_stack_size == 1);
+    }
+
+    QVector<Token> processString(QString formula, bool isExpression)
     {
         QVector<Token> outputQueue;
         QStack<QString> opStack;
@@ -181,7 +194,7 @@ namespace parseFormula
 
         for (auto it = formula.constBegin(); it != formula.constEnd(); ++it)
         {
-            if (it->isLetter() || it->isNumber() || *it == '.') // ||
+            if (it->isLetter() || it->isNumber() || *it == '.' || (*it == 'e' && (it-1)->isNumber()) || ((*it == '+' || *it == '-') && *(it-1) == 'e')) // ||
             {
                 buff += *it;
             }
@@ -202,6 +215,13 @@ namespace parseFormula
             else
                 throw MRB;
         }
+
+        /*qDebug() << "New List:";
+        for (auto it = outputQueue.begin(); it != outputQueue.end(); ++it)
+            qDebug() << "Token: " << it->type << it->data.real() << it->data.imag();*/
+
+        if (!verify_formula(outputQueue))
+            throw OA;
 
         return outputQueue;
     }

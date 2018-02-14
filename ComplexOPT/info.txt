@@ -1,17 +1,17 @@
-Long term to do list:
+Parse Formula to do:
 
-    - Add undo history dialog, allowing user to view and select from a list of all previous canvases. THis would take the shape of a resizable dialog containing a list of all histories with relevent information (including formula, min and max domain) and ok/cancel buttons.
-    - Add root finder function to cooda.dll. Use multivariate calculus and newton-raphson method to locate zeros based on given seed. To the user this will add another togglable click interface, (on top of pan and rectangle zoom) a single click will select the seed, and draw an object on the screen at the location of the zero.
-      Must account for resized screen. Object must be cleared if  a) the domain is changed to be outside the zero, b) a new function is drawn c) the user selects a different togglable click (either pan or rectangle zoom)
-    - Detect when another instance of ComplexOPT is running, warn user, and disable all functionality.
-    - Investigate leading double slash '//' error.
-
-
-Short term to do:
-
-    - Handle exceptions from parseformula with message boxes, do not allow user to leave drawdialog without a valid formula
-    - Check formula by making sure only a single item remains on the stack after the TokenList is evaluated
-    - Add text-based calculator in the form of an inputbox
     - Any functions where all the operands are constants should be pre-evaluated. for example z*sin(2) should be sent as z*0.909297.
-    - Add support for scientific notation (3.2e+22)
-    - After a root is found with newton-raphson, calculate and show user f(a).
+
+UI to do:
+
+    - Add text-based calculator in the form of an inputbox
+    - Show location of root from newton-raphson
+
+Application to do:
+
+    - Find out why icons aren't showing up in toolbar in release executable
+    - Convert bmp resources to png
+
+Critical to do:
+
+

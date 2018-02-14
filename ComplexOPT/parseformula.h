@@ -56,7 +56,7 @@ namespace parseFormula
 
     void sendToken(const QString &, const QList<QString> & outputQueue, QStack<QString> &opStack, QString &prev);
 
-    QVector<Token> processString(QString);
+    QVector<Token> processString(QString, bool);
 
 }
 

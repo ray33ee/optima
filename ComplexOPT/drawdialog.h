@@ -5,7 +5,7 @@
 
 #include "qdebug.h"
 #include "parseformula.h"
-
+#include <QMessageBox>
 
 class MainWindow;
 
