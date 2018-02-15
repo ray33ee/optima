@@ -4,13 +4,12 @@ Parse Formula to do:
 
 UI to do:
 
-    - Add text-based calculator in the form of an inputbox
     - Show location of root from newton-raphson
+    - Add 'ans' feature to calculator
 
 Application to do:
 
     - Find out why icons aren't showing up in toolbar in release executable
-    - Convert bmp resources to png
 
 Critical to do:
 

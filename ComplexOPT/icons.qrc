@@ -1,16 +1,16 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>resources/toolbar/new.bmp</file>
-        <file>resources/toolbar/pan.bmp</file>
-        <file>resources/toolbar/save.bmp</file>
-        <file>resources/toolbar/zoom.bmp</file>
-        <file>resources/toolbar/redo.bmp</file>
-        <file>resources/toolbar/refresh.bmp</file>
-        <file>resources/toolbar/undo.bmp</file>
+        <file>resources/toolbar/new.png</file>
+        <file>resources/toolbar/pan.png</file>
+        <file>resources/toolbar/save.png</file>
+        <file>resources/toolbar/zoom.png</file>
+        <file>resources/toolbar/redo.png</file>
+        <file>resources/toolbar/refresh.png</file>
+        <file>resources/toolbar/undo.png</file>
         <file>resources/toolbar/zoomin.png</file>
         <file>resources/toolbar/zoomout.png</file>
         <file>resources/toolbar/newton.png</file>
         <file>resources/icons/Final.ico</file>
-        <file>resources/toolbar/Calculator.png</file>
+        <file>resources/toolbar/calculator.png</file>
     </qresource>
 </RCC>

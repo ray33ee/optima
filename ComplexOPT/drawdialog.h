@@ -2,10 +2,11 @@
 #define DRAWDIALOG_H
 
 #include <QDialog>
+#include <QMessageBox>
 
 #include "qdebug.h"
 #include "parseformula.h"
-#include <QMessageBox>
+#include "complex.h"
 
 class MainWindow;
 

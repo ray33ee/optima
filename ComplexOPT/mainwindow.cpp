@@ -13,22 +13,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->complexView->setWindowParent(this);
 
     // Initialise toollbar buttons
-    newButton = new QAction(QIcon(":/icons/resources/toolbar/new.bmp"), "", ui->toolBar);
+    newButton = new QAction(QIcon(":/icons/resources/toolbar/new.png"), "", ui->toolBar);
 
 
 
-    saveButton = new QAction(QIcon(":/icons/resources/toolbar/save.bmp"), "", ui->toolBar);
+    saveButton = new QAction(QIcon(":/icons/resources/toolbar/save.png"), "", ui->toolBar);
 
-    panButton = new QAction(QIcon(":/icons/resources/toolbar/pan.bmp"), "", ui->toolBar);
-    zoomButton = new QAction(QIcon(":/icons/resources/toolbar/zoom.bmp"), "", ui->toolBar);
+    panButton = new QAction(QIcon(":/icons/resources/toolbar/pan.png"), "", ui->toolBar);
+    zoomButton = new QAction(QIcon(":/icons/resources/toolbar/zoom.png"), "", ui->toolBar);
     newtonButton = new QAction(QIcon(":/icons/resources/toolbar/newton.png"), "", ui->toolBar);
 
-    refreshButton = new QAction(QIcon(":/icons/resources/toolbar/refresh.bmp"), "", ui->toolBar);
+    refreshButton = new QAction(QIcon(":/icons/resources/toolbar/refresh.png"), "", ui->toolBar);
 
-    calculatorButton = new QAction(QIcon(":/icons/resources/toolbar/Calculator.png"), "", ui->toolBar);
+    calculatorButton = new QAction(QIcon(":/icons/resources/toolbar/calculator.png"), "", ui->toolBar);
 
-    undoButton = new QAction(QIcon(":/icons/resources/toolbar/undo.bmp"), "", ui->toolBar);
-    redoButton = new QAction(QIcon(":/icons/resources/toolbar/redo.bmp"), "", ui->toolBar);
+    undoButton = new QAction(QIcon(":/icons/resources/toolbar/undo.png"), "", ui->toolBar);
+    redoButton = new QAction(QIcon(":/icons/resources/toolbar/redo.png"), "", ui->toolBar);
 
     zinButton = new QAction(QIcon(":/icons/resources/toolbar/zoomin.png"), "", ui->toolBar);
     zoutButton = new QAction(QIcon(":/icons/resources/toolbar/zoomout.png"), "", ui->toolBar);
@@ -92,8 +92,11 @@ MainWindow::MainWindow(QWidget *parent) :
     zinButton->setToolTip("Zoom in");
     zoutButton->setToolTip("Zoom out");
 
-    //Setup dialog object
+    //Setup new canvas dialog object
     dialog = new DrawDialog(this);
+
+    //Setup calculator
+    calculator = new CalculatorDialog(this);
 
     //Setup undo/redo history
     LinearUndo<Canvas>::instance().append({dialog->getMin(), dialog->getMax(), dialog->getFormula()});
@@ -268,13 +271,13 @@ void MainWindow::find_root(const Complex &c)
 {
     auto xn = newton(dialog->getList(), c, 100);
 
-    auto strXn = QString::number(xn.real()) + (xn.imag() < 0 ? " - " : " + ") + QString::number(fabs(xn.imag())) + "*i";
+    auto strXn = complex_to_string(xn);
 
     int col; double mod, arg; Complex fz;
 
     trace(xn, dialog->getList(), &fz, &col, &mod, &arg);
 
-    auto strFz = QString::number(fz.real()) + (fz.imag() < 0 ? " - " : " + ") + QString::number(fabs(fz.imag())) + "*i";
+    auto strFz = complex_to_string(fz);
 
     auto ret = QMessageBox::question(this, "Root found",
                           "Root found at z = " + strXn + " (f(z) = " + strFz + "). Save to clipboard?",
@@ -284,12 +287,12 @@ void MainWindow::find_root(const Complex &c)
         QApplication::clipboard()->setText(strXn);
 }
 
-Complex MainWindow::evaluate(const TokenList &list)
+Complex MainWindow::evaluate(const Complex &z, const TokenList &list)
 {
     Complex ans;
     int a;
     double b,c;
-    trace(Complex{0.0,0.0},list, &ans, &a, &b, &c);
+    trace(z,list, &ans, &a, &b, &c);
     return ans;
 }
 
@@ -342,7 +345,7 @@ void MainWindow::toolbarTriggered(QAction *action)
     }
     else if (action == calculatorButton)
     {
-
+        calculator->show();
     }
     else if (action == undoButton)
     {

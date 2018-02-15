@@ -5,18 +5,17 @@
 
 #include <QtGui>
 #include <QGraphicsScene>
-#include "drawdialog.h"
 #include <QAction>          //For the toolbar buttons
 #include <QLabel>           //For the status bar labels
 #include <QMessageBox>      //Message box to display errors
 #include <QAbstractButton>
 #include <QFileDialog>      //Prompt user for location to save image
 #include <QVector>
-#include <complex>
+#include <complex.h>
 
-
-
-using Complex = std::complex<double>;
+#include "complex.h"
+#include "drawdialog.h"
+#include "calculatordialog.h"
 
 template <class T>
 class LinearUndo
@@ -100,7 +99,7 @@ public:
     void retrace(const QPoint&);
     void find_root(const Complex &);
 
-    Complex evaluate(const TokenList &);
+    Complex evaluate(const Complex &, const TokenList &);
 
 private:
     Ui::MainWindow *ui;
@@ -149,6 +148,7 @@ private:
     QLibrary* lib;
 
     DrawDialog* dialog;
+    CalculatorDialog* calculator;
 
     struct Canvas
     {

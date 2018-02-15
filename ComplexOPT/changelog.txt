@@ -55,3 +55,11 @@ Version 1.0.6
  - Expressions are verified by making sure only a single element exists on the stack after the expression is evaluated
  - 'image' member is initialised as nullptr to avoid double delete (fixes crash when exit if dll not found bug)
  - DrawDialog constructor cleaned up
+
+===========================================================================
+Version 1.1.0
+===========================================================================
+
+ - Calculator functionality added
+ - Encapsulated conversion from Complex to QString in function complex_to_string
+ - Image resources converted to png format

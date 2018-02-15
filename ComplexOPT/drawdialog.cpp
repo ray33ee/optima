@@ -30,8 +30,8 @@ void DrawDialog::accept()
         auto minList = parseFormula::processString(ui->txtMinimum->text(), true);
         auto maxList = parseFormula::processString(ui->txtMaximum->text(), true);
 
-        minimum = ((MainWindow*)parent())->evaluate(TokenList{minList.data(), minList.size()});
-        maximum = ((MainWindow*)parent())->evaluate(TokenList{maxList.data(), maxList.size()});
+        minimum = ((MainWindow*)parent())->evaluate(Complex{0.0, 0.0}, TokenList{minList.data(), minList.size()});
+        maximum = ((MainWindow*)parent())->evaluate(Complex{0.0, 0.0}, TokenList{maxList.data(), maxList.size()});
 
         QDialog::accept();
     }
@@ -55,11 +55,11 @@ void DrawDialog::setFormula(const QString &form)
 void DrawDialog::setMin(const Complex &min)
 {
     minimum = min;
-    ui->txtMinimum->setText(QString::number(minimum.real()) + (minimum.imag() < 0 ? " - " : " + ") + QString::number(fabs(minimum.imag())) + "*i");
+    ui->txtMinimum->setText(complex_to_string(minimum));
 }
 
 void DrawDialog::setMax(const Complex &max)
 {
     maximum = max;
-    ui->txtMaximum->setText(QString::number(maximum.real()) + (maximum.imag() < 0 ? " - " : " + ") + QString::number(fabs(maximum.imag())) + "*i");
+    ui->txtMaximum->setText(complex_to_string(maximum));
 }

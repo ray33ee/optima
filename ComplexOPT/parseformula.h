@@ -6,11 +6,11 @@
 #include <QList>
 #include <QVector>
 #include <QStack>
-#include <complex>
+
+#include "complex.h"
+
 
 #include "qdebug.h"
-
-using Complex = std::complex<double>;
 
 struct Token
 {

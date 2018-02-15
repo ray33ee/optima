@@ -18,15 +18,20 @@ RC_FILE = icon.rc
 SOURCES += main.cpp\
         mainwindow.cpp \
     drawdialog.cpp \
-    parseformula.cpp
+    parseformula.cpp \
+    calculatordialog.cpp \
+    complex.cpp
 
 HEADERS  += mainwindow.h \
     complexview.h \
     drawdialog.h \
-    parseformula.h
+    parseformula.h \
+    calculatordialog.h \
+    complex.h
 
 FORMS    += mainwindow.ui \
-    drawdialog.ui
+    drawdialog.ui \
+    calculatordialog.ui
 
 RESOURCES += \
     icons.qrc

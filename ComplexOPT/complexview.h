@@ -5,10 +5,7 @@
 #include <QGraphicsView>
 
 #include "mainwindow.h"
-
-#include <complex>
-
-using Complex = std::complex<double>;
+#include "complex.h"
 
 /* Widget responsible for drawing on canvas */
 class ComplexView : public QGraphicsView

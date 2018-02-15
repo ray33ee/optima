@@ -68,6 +68,9 @@
       <height>121</height>
      </rect>
     </property>
+    <property name="placeholderText">
+     <string>z</string>
+    </property>
    </widget>
   </widget>
   <widget class="QGroupBox" name="gbxBoundaries">
@@ -154,6 +157,9 @@
       </disabled>
      </palette>
     </property>
+    <property name="placeholderText">
+     <string>-1-i</string>
+    </property>
    </widget>
    <widget class="QLineEdit" name="txtMaximum">
     <property name="geometry">
@@ -163,6 +169,9 @@
       <width>351</width>
       <height>20</height>
      </rect>
+    </property>
+    <property name="placeholderText">
+     <string>1+i</string>
     </property>
    </widget>
   </widget>
