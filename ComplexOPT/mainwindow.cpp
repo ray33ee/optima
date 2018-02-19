@@ -15,8 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // Initialise toollbar buttons
     newButton = new QAction(QIcon(":/icons/resources/toolbar/new.png"), "", ui->toolBar);
 
-
-
     saveButton = new QAction(QIcon(":/icons/resources/toolbar/save.png"), "", ui->toolBar);
 
     panButton = new QAction(QIcon(":/icons/resources/toolbar/pan.png"), "", ui->toolBar);
@@ -93,15 +91,15 @@ MainWindow::MainWindow(QWidget *parent) :
     zoutButton->setToolTip("Zoom out");
 
     //Setup new canvas dialog object
-    dialog = new DrawDialog(this);
+    draw = new DrawDialog(this);
 
     //Setup calculator
     calculator = new CalculatorDialog(this);
 
     //Setup undo/redo history
-    LinearUndo<Canvas>::instance().append({dialog->getMin(), dialog->getMax(), dialog->getFormula()});
+    LinearUndo<Canvas>::instance().append({draw->getMin(), draw->getMax(), draw->getFormula()});
 
-    //Setup status bar obnjects
+    //Setup status bar objects
     color = new QLabel("    ");
     inreal = new QLabel("Real: ");
     inimag = new QLabel("Imag: ");
@@ -127,6 +125,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusBar->addPermanentWidget(outmod);
     ui->statusBar->addPermanentWidget(outarg);
 
+    //Setup tool tip text for status bar objects
     color->setToolTip("Domain color");
 
     inreal->setToolTip("Domain real part");
@@ -137,17 +136,15 @@ MainWindow::MainWindow(QWidget *parent) :
     outmod->setToolTip("Codomain modulus");
     outarg->setToolTip("Codomain argument");
 
+    //Setup DLL library
     lib = new QLibrary("cuRIEMANN.dll");
 
+    //Avoid double deletion
     image = nullptr;
-
+    scene = nullptr;
 
     if (!lib->load()) //If there is an issue loading cooda.dll, inform the user and disable all buttons and functions
     {
-
-
-        //qDebug() << "Error loading cooda library: " << lib->errorString();
-
         QMessageBox::critical(this, "Cooda DLL Error", "Error loading cooda.dll library - '" + lib->errorString() + "'", QMessageBox::Ok);
 
         ui->action_New->setEnabled(false);
@@ -156,10 +153,12 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->action_Redo->setEnabled(false);
         ui->action_Undo->setEnabled(false);
 
+
+        ui->complexView->setEnabled(false);
+
         //Disable all buttons in toolbar
         for (auto& a : ui->toolBar->actions())
             a->setEnabled(false);
-
     }
     else
     {
@@ -171,9 +170,7 @@ MainWindow::MainWindow(QWidget *parent) :
         gradient = (DLLGradient)lib->resolve("entryGradient");
         newton = (DLLNewton)lib->resolve("entryNewtonRaphson");
 
-        //qDebug() << "Construct error: " <<
         constructor(0);
-
 
         scene = new QGraphicsScene();
         ui->complexView->setScene(scene);
@@ -209,10 +206,6 @@ void MainWindow::toggleNewton(bool checked)
 
 void MainWindow::redraw(Complex minimum, Complex maximum, TokenList list)
 {
-    /*auto minimum = Complex(min.real(), max.imag());
-
-    auto maximum = Complex(max.real(), min.imag());*/
-
     if (lib->isLoaded())
     {
         initialise(image->width(), image->height(), list, image->bits());
@@ -226,14 +219,8 @@ void MainWindow::redraw(Complex minimum, Complex maximum, TokenList list)
 
 void MainWindow::retrace(const QPoint &event)
 {
-    if (!lib->load())
-        return;
-
-    //auto last = dialog->getMax();
-    //auto min = dialog->getMin();
-
-    auto first = Complex(dialog->getMin().real(), dialog->getMax().imag());
-    auto last = Complex(dialog->getMax().real(), dialog->getMin().imag());
+    auto first = Complex(draw->getMin().real(), draw->getMax().imag());
+    auto last = Complex(draw->getMax().real(), draw->getMin().imag());
 
     auto diff = last - first;
 
@@ -248,7 +235,7 @@ void MainWindow::retrace(const QPoint &event)
             first.imag() + diff.imag() * (event.y()) / image->height()
         };
 
-    trace(z, dialog->getList(), &ans, &col, &mod, &arg);
+    trace(z, draw->getList(), &ans, &col, &mod, &arg);
 
     QPalette p = palette();
 
@@ -269,22 +256,18 @@ void MainWindow::retrace(const QPoint &event)
 
 void MainWindow::find_root(const Complex &c)
 {
-    auto xn = newton(dialog->getList(), c, 100);
-
-    auto strXn = complex_to_string(xn);
+    auto xn = newton(draw->getList(), c, 100); //Call newton raphson with a timeout of 100 iterations
 
     int col; double mod, arg; Complex fz;
 
-    trace(xn, dialog->getList(), &fz, &col, &mod, &arg);
-
-    auto strFz = complex_to_string(fz);
+    trace(xn, draw->getList(), &fz, &col, &mod, &arg);
 
     auto ret = QMessageBox::question(this, "Root found",
-                          "Root found at z = " + strXn + " (f(z) = " + strFz + "). Save to clipboard?",
+                          "Root found at z = " + complex_to_string(xn) + " (f(z) = " + complex_to_string(fz) + "). Save to clipboard?",
                           QMessageBox::No | QMessageBox::Yes);
 
     if (ret == QMessageBox::Yes)
-        QApplication::clipboard()->setText(strXn);
+        QApplication::clipboard()->setText(complex_to_string(xn));
 }
 
 Complex MainWindow::evaluate(const Complex &z, const TokenList &list)
@@ -316,7 +299,7 @@ void MainWindow::toolbarTriggered(QAction *action)
 
     if (action == newButton)
     {
-        if (dialog->exec())
+        if (draw->exec())
             buttonNew();
     }
     else if (action == saveButton)
@@ -373,7 +356,7 @@ void MainWindow::menuTriggered(QAction *action)
 {
     if (action->text() == "&New")
     {
-        if (dialog->exec())
+        if (draw->exec())
             buttonNew();
     }
     else if (action->text() == "&Save Image")
@@ -400,9 +383,9 @@ void MainWindow::menuTriggered(QAction *action)
 
 void MainWindow:: buttonNew()
 {
-    LinearUndo<Canvas>::instance().append({dialog->getMin(), dialog->getMax(), dialog->getFormula()});
+    LinearUndo<Canvas>::instance().append({draw->getMin(), draw->getMax(), draw->getFormula()});
 
-    redraw(dialog->getMin(), dialog->getMax(), dialog->getList());
+    redraw(draw->getMin(), draw->getMax(), draw->getList());
 
 
 }
@@ -417,7 +400,7 @@ void MainWindow::buttonSave()
 
 void MainWindow::buttonRefresh()
 {
-    redraw(dialog->getMin(), dialog->getMax(), dialog->getList());
+    redraw(draw->getMin(), draw->getMax(), draw->getList());
 }
 
 void MainWindow::buttonUndo()
@@ -425,9 +408,9 @@ void MainWindow::buttonUndo()
     //Get previous canvas in history list, provided we are not at the beginning of the list
     auto current = LinearUndo<Canvas>::instance().undo();
 
-    dialog->setMin(current->m_Minimum);
-    dialog->setMax(current->m_Maximum);
-    dialog->setFormula(current->m_Formula);
+    draw->setMin(current->m_Minimum);
+    draw->setMax(current->m_Maximum);
+    draw->setFormula(current->m_Formula);
 
     redraw(*current);
 
@@ -435,27 +418,27 @@ void MainWindow::buttonUndo()
 
 void MainWindow::centerZoom(double factor)
 {
-    auto min = dialog->getMin();
-    auto max = dialog->getMax();
+    auto min = draw->getMin();
+    auto max = draw->getMax();
 
     auto diff = max - min;
 
-    dialog->setMin(min - diff * factor);
-    dialog->setMax(max + diff * factor);
+    draw->setMin(min - diff * factor);
+    draw->setMax(max + diff * factor);
 
 
-    LinearUndo<Canvas>::instance().append({dialog->getMin(), dialog->getMax(), dialog->getFormula()});
+    LinearUndo<Canvas>::instance().append({draw->getMin(), draw->getMax(), draw->getFormula()});
 
-    redraw(dialog->getMin(), dialog->getMax(), dialog->getList());
+    redraw(draw->getMin(), draw->getMax(), draw->getList());
 }
 
 void MainWindow::buttonRedo()
 {
     auto current = LinearUndo<Canvas>::instance().redo();
 
-    dialog->setMin(current->m_Minimum);
-    dialog->setMax(current->m_Maximum);
-    dialog->setFormula(current->m_Formula);
+    draw->setMin(current->m_Minimum);
+    draw->setMax(current->m_Maximum);
+    draw->setFormula(current->m_Formula);
 
     redraw(*current);
 }
@@ -465,6 +448,34 @@ MainWindow::~MainWindow()
     if (lib->isLoaded())
         //qDebug() << "Destruct error: " <<
         destructor();
+
+    delete newButton;
+    delete saveButton;
+    delete panButton;
+    delete zoomButton;
+    delete newtonButton;
+    delete refreshButton;
+    delete calculatorButton;
+    delete undoButton;
+    delete redoButton;
+    delete zinButton;
+    delete zoutButton;
+
+
+    delete color;
+    delete inreal;
+    delete inimag;
+    delete outreal;
+    delete outimag;
+    delete outmod;
+    delete outarg;
+
+
+    delete scene;
+    delete lib;
+
+    delete draw;
+    delete calculator;
 
     delete image;
 

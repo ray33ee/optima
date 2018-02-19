@@ -4,7 +4,6 @@
 #include <QDialog>
 #include <QMessageBox>
 
-#include "qdebug.h"
 #include "parseformula.h"
 #include "complex.h"
 

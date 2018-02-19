@@ -36,7 +36,10 @@ protected:
             case 0: //pan
                 {auto movementVector = event->pos() - pressPos;
 
+                //Get how far the user has scrolled, as a complex number
                 auto adjustedMovement =  Complex((m_Parent->getDialog()->getMax().real() - m_Parent->getDialog()->getMin().real()) / width() * movementVector.x(), (m_Parent->getDialog()->getMin().imag() - m_Parent->getDialog()->getMax().imag()) / height() * movementVector.y() );
+
+                //Adjust the Min and Max domains accordingly
                 m_Parent->getDialog()->setMin(m_Parent->getDialog()->getMin() - adjustedMovement);
                 m_Parent->getDialog()->setMax(m_Parent->getDialog()->getMax() - adjustedMovement);}
 
@@ -48,8 +51,9 @@ protected:
                 auto newMin = Complex((max.real() - min.real()) / width() * pressPos.x() + min.real(), (max.imag() - min.imag()) / height() * pressPos.y() + min.imag());
                 auto newMax = Complex((max.real() - min.real()) / width() * event->pos().x() + min.real(), (max.imag() - min.imag()) / height() * event->pos().y() + min.imag());
 
-                m_Parent->getDialog()->setMin(Complex(newMin.real() < newMax.real() ? newMin.real() : newMax.real(), newMin.imag() < newMax.imag() ? newMin.imag() : newMax.imag()));
+                //Values adjusted so no matter which order the user starts and finishes selecting, the map will look the same
 
+                m_Parent->getDialog()->setMin(Complex(newMin.real() < newMax.real() ? newMin.real() : newMax.real(), newMin.imag() < newMax.imag() ? newMin.imag() : newMax.imag()));
                 m_Parent->getDialog()->setMax(Complex(newMin.real() > newMax.real() ? newMin.real() : newMax.real(), newMin.imag() > newMax.imag() ? newMin.imag() : newMax.imag()));}
                 break;
             case 2: //newton

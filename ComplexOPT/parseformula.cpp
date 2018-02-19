@@ -169,6 +169,7 @@ namespace parseFormula
         }
     }
 
+    /* Make sure formula leaves a single item on stack after it is processed */
     bool verify_formula(const QVector<Token> &f)
     {
         int pretend_stack_size = 0;
@@ -215,10 +216,6 @@ namespace parseFormula
             else
                 throw MRB;
         }
-
-        /*qDebug() << "New List:";
-        for (auto it = outputQueue.begin(); it != outputQueue.end(); ++it)
-            qDebug() << "Token: " << it->type << it->data.real() << it->data.imag();*/
 
         if (!verify_formula(outputQueue))
             throw OA;

@@ -8,7 +8,6 @@ CalculatorDialog::CalculatorDialog(QWidget *parent) :
     ui(new Ui::CalculatorDialog)
 {
     ui->setupUi(this);
-
 }
 
 CalculatorDialog::~CalculatorDialog()
@@ -29,10 +28,9 @@ void CalculatorDialog::calculate()
 
 
     auto formula = parseFormula::processString(ui->txtFormula->toPlainText(), false);
-
     auto ans = ((MainWindow*)parent())->evaluate(input, TokenList{formula.data(), formula.size()});
 
-    ui->txtOutput->setText(QString::number(ans.real()) + " " + QString::number(ans.imag()));
+    ui->txtOutput->setText(complex_to_string(ans));
 
 
 }

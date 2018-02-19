@@ -9,7 +9,7 @@ UI to do:
 
 Application to do:
 
-    - Find out why icons aren't showing up in toolbar in release executable
+    - Add DLL during compile time (using resource)
 
 Critical to do:
 

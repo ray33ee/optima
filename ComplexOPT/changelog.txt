@@ -63,3 +63,11 @@ Version 1.1.0
  - Calculator functionality added
  - Encapsulated conversion from Complex to QString in function complex_to_string
  - Image resources converted to png format
+
+===========================================================================
+Version 1.1.1
+===========================================================================
+
+ - Increased precision for copyable values (calculator, min, max, etc.)
+ - Icons disapearing in release version fixed - Issue was a result of dependencies not being updated. windeployqt should be called each time dependencies are changed.
+ - Build steps added to debug (to copy cuRIEMANN.dll) and release (to copy cuRIEMANN and invoke windeployqt to copy dependencies)

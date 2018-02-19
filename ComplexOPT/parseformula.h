@@ -9,9 +9,6 @@
 
 #include "complex.h"
 
-
-#include "qdebug.h"
-
 struct Token
 {
     int type;

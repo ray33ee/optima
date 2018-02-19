@@ -147,7 +147,7 @@ private:
     QGraphicsScene* scene;
     QLibrary* lib;
 
-    DrawDialog* dialog;
+    DrawDialog* draw;
     CalculatorDialog* calculator;
 
     struct Canvas
@@ -163,7 +163,7 @@ private:
 public:
 
 
-    DrawDialog* getDialog() const { return dialog; }
+    DrawDialog* getDialog() const { return draw; }
     int checkedButton() const
     {
         if (panButton->isChecked())
@@ -189,8 +189,8 @@ protected:
     void redraw(Complex, Complex, TokenList list);
     void redraw(const Canvas &c)
     {
-        dialog->setFormula(c.m_Formula);
-        redraw(c.m_Minimum, c.m_Maximum, dialog->getList());
+        draw->setFormula(c.m_Formula);
+        redraw(c.m_Minimum, c.m_Maximum, draw->getList());
     }
 
 public slots:
